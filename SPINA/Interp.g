@@ -43,7 +43,9 @@ assignment returns [AssignmentOperationElement ret]
   : variable {retval.ret.setLhs($variable.ret); }
     ASSIGNMENT 
     (var_or_int_literal {retval.ret.setRhs($var_or_int_literal.ret); } 
-    | addition {retval.ret.setRhs($addition.ret); }
+    | addition {retval.ret.setRhs($addition.ret); } 
+    | multiplication {retval.ret.setRhs($multiplication.ret);}
+
     ) END_OF_STATEMENT;
 
 var_or_int_literal returns [Element ret]
@@ -67,8 +69,17 @@ addition returns [AdditionOperationElement ret]
   retval.ret = new AdditionOperationElement();
 }
   : el1=var_or_int_literal { retval.ret.setLhs($el1.ret); } 
-    '+' 
+    PLUS 
     el2=var_or_int_literal { retval.ret.setRhs($el2.ret); };
+
+multiplication returns [MultiplicationOperationElement ret]
+@init {
+  retval.ret = new MultiplicationOperationElement();
+}
+  : el1=var_or_int_literal { retval.ret.setLhs($el1.ret); } 
+    MULT 
+    el2=var_or_int_literal { retval.ret.setRhs($el2.ret); };
+
 
 print returns [PrintOperationElement ret]
 @init {
@@ -84,6 +95,7 @@ print returns [PrintOperationElement ret]
 END_OF_STATEMENT: ';';
 ASSIGNMENT: '=';
 PLUS: '+';
+MULT: '*';
 VARIABLE: ('a'..'z' | 'A'..'Z' )+;
 INT_LITERAL: ('0'..'9')+;
 WHITESPACE : (' ' | '\t' | '\n' | '\r' )+ {$channel = HIDDEN; } ;

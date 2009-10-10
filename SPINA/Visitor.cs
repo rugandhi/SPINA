@@ -17,6 +17,7 @@ public abstract class Visitor {
   public abstract void VisitAssignmentOperationElement(AssignmentOperationElement element);
   public abstract void VisitAdditionOperationElement(AdditionOperationElement element);
   public abstract void VisitPrintOperationElement(PrintOperationElement element);
+  public abstract void VisitMultiplicationOperationElement(MultiplicaitonOperationElement element);
 
   public void VisitElement(Element element){
     if(element is IntegerElement){

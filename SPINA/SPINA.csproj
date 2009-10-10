@@ -68,6 +68,7 @@
     <Compile Include="InterpLexer.cs" />
     <Compile Include="InterpParser.cs" />
     <Compile Include="InterpreterVisitor.cs" />
+    <Compile Include="MultiplicationOperationElement.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="PrintOperationElement.cs" />
     <Compile Include="Program.cs" />
