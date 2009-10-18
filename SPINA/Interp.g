@@ -34,7 +34,9 @@ program returns [List<Element> ret]
 
 expr returns [Element ret]
   : assignment {retval.ret = $assignment.ret;}
-  | print { retval.ret = $print.ret; };
+  | mat_assignment {retval.ret = $mat_assignment.ret;}
+  | print { retval.ret = $print.ret; }
+  | mat_print{retval.ret = $mat_print.ret; };
 
 assignment returns [AssignmentOperationElement ret]
 @init {
@@ -44,8 +46,8 @@ assignment returns [AssignmentOperationElement ret]
     ASSIGNMENT 
     (var_or_int_literal {retval.ret.setRhs($var_or_int_literal.ret); } 
     | addition {retval.ret.setRhs($addition.ret); } 
-    | multiplication {retval.ret.setRhs($multiplication.ret);}
-
+    | multiplication {retval.ret.setRhs($multiplication.ret);}	
+  
     ) END_OF_STATEMENT;
 
 var_or_int_literal returns [Element ret]
@@ -57,12 +59,37 @@ variable returns [VariableElement ret]
   retval.ret = new VariableElement();
 }
   : VARIABLE { retval.ret.setText($VARIABLE.text); };
+   
 
 int_literal returns [IntegerElement ret]
 @init {
   retval.ret = new IntegerElement();
 }
   : INT_LITERAL { retval.ret.setText($INT_LITERAL.text); };
+
+mat_assignment returns [MatrixAssignmentOperationElement ret]
+@init {
+  retval.ret = new MatrixAssignmentOperationElement();
+}
+  : mat_name {retval.ret.setLhs($mat_name.ret); }
+    ASSIGNMENT 
+    mat_var {retval.ret.setRhs($mat_var.ret);};
+
+mat_var returns [Element ret]
+  :   (mat_name { retval.ret = $mat_name.ret; } 
+  |   mat_data {retval.ret = $mat_data.ret; } );
+
+mat_name returns [MatrixName ret]
+@init {
+  retval.ret = new MatrixName();
+}
+  : 'mat' MAT_NAME { retval.ret.setText ($MAT_NAME.text);};
+
+mat_data returns [MatrixData ret]
+@init {
+  retval.ret = new MatrixData();
+}
+  : MAT_DATA { retval.ret.setText ($MAT_DATA.text);};
 
 addition returns [AdditionOperationElement ret]
 @init {
@@ -85,8 +112,14 @@ print returns [PrintOperationElement ret]
 @init {
   retval.ret = new PrintOperationElement();
 }
-  : 'print' var_or_int_literal {retval.ret.setChildElement($var_or_int_literal.ret); }
-    END_OF_STATEMENT; 
+  : 'print' var_or_int_literal {retval.ret.setChildElement($var_or_int_literal.ret); }END_OF_STATEMENT; 
+
+mat_print returns [PrintMatOperationElement ret]
+@init {
+  retval.ret = new PrintMatOperationElement();
+}
+  : 'print_mat' VARIABLE { retval.ret.setText($VARIABLE.text);};
+
 
 /*
  * Lexer Rules
@@ -98,5 +131,8 @@ PLUS: '+';
 MULT: '*';
 VARIABLE: ('a'..'z' | 'A'..'Z' )+;
 INT_LITERAL: ('0'..'9')+;
+MAT_NAME: (VARIABLE INT_LITERAL? ('[' INT_LITERAL ']')+ );
+MAT_PRINT_NAME: (VARIABLE INT_LITERAL?);
+MAT_DATA: ( '[' ( (INT_LITERAL) | ((INT_LITERAL ',')+ INT_LITERAL) | (('[' (INT_LITERAL ',')+ INT_LITERAL ']')+ ) ) ']');
 WHITESPACE : (' ' | '\t' | '\n' | '\r' )+ {$channel = HIDDEN; } ;
 

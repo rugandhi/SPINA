@@ -63,6 +63,9 @@
   <ItemGroup>
     <Compile Include="AdditionOperationElement.cs" />
     <Compile Include="AssignmentOperationElement.cs" />
+    <Compile Include="MatrixAssignmentOperationELement.cs" />
+    <Compile Include="MatrixData.cs" />
+    <Compile Include="MatrixName.cs" />
     <Compile Include="Element.cs" />
     <Compile Include="IntegerElement.cs" />
     <Compile Include="InterpLexer.cs" />
@@ -70,6 +73,7 @@
     <Compile Include="InterpreterVisitor.cs" />
     <Compile Include="MultiplicationOperationElement.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
+    <Compile Include="PrintMatOperationElement.cs" />
     <Compile Include="PrintOperationElement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

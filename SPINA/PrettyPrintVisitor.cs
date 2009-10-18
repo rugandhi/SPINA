@@ -18,11 +18,26 @@ public class PrettyPrintVisitor : Visitor {
   public override void VisitIntegerElement(IntegerElement element){
     Console.Write("int:" + element.getText() + " ");
   }
+  public override void VisitMatrixName(MatrixName element)
+  {
+      Console.Write("mat_name:" + element.getText() + " ");
+  }
+  public override void VisitMatrixData(MatrixData element)
+  {
+      Console.Write("mat_data:" + element.getText() + " ");
+  }
   public override void VisitAssignmentOperationElement(AssignmentOperationElement element){
     VisitElement(element.getLhs());
     Console.Write(":= ");
     VisitElement(element.getRhs());
     Console.WriteLine(";");
+  }
+  public override void VisitMatrixAssignmentOperationElement(MatrixAssignmentOperationElement element)
+  {
+      VisitElement(element.getLhs());
+      Console.Write(":= ");
+      VisitElement(element.getRhs());
+      Console.WriteLine(";");
   }
   public override void VisitAdditionOperationElement(AdditionOperationElement element){
     VisitElement(element.getLhs());
@@ -30,9 +45,22 @@ public class PrettyPrintVisitor : Visitor {
     VisitElement(element.getRhs());
     Console.Write(" ");
   }
+  public override void VisitMultiplicationOperationElement(MultiplicationOperationElement element)
+  {
+      VisitElement(element.getLhs());
+      Console.Write("* ");
+      VisitElement(element.getRhs());
+      Console.Write(" ");
+  }
   public override void VisitPrintOperationElement(PrintOperationElement element){
     Console.Write("function:print ");
     VisitElement(element.getChildElement());
     Console.WriteLine(";");
+  }
+  public override void VisitPrintMatOperationElement(PrintMatOperationElement element)
+  {
+      Console.Write("function:Mat_Print ");
+      Console.Write("mat_var: "+ element.getText());
+      Console.WriteLine(";");
   }
 }

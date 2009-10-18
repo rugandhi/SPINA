@@ -11,3 +11,12 @@ C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\Interp_CS
 C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\Interp_CSharp\Interp_CSharp\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\obj\Debug\Interp_CSharp.exe
 C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\obj\Debug\Interp_CSharp.pdb
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\Interp_CSharp.exe
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\Interp_CSharp.pdb
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\antlr.runtime.dll
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\Antlr3.Runtime.dll
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\Antlr3.Utility.dll
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\StringTemplate.dll
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\Antlr3.Utility.xml
+C:\Documents and Settings\Rus\My Documents\Visual Studio 2008\Projects\SPINA\SPINA\bin\Debug\Antlr3.Runtime.xml
