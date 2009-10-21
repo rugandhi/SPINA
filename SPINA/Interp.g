@@ -60,36 +60,11 @@ variable returns [VariableElement ret]
 }
   : VARIABLE { retval.ret.setText($VARIABLE.text); };
    
-
 int_literal returns [IntegerElement ret]
 @init {
   retval.ret = new IntegerElement();
 }
   : INT_LITERAL { retval.ret.setText($INT_LITERAL.text); };
-
-mat_assignment returns [MatrixAssignmentOperationElement ret]
-@init {
-  retval.ret = new MatrixAssignmentOperationElement();
-}
-  : mat_name {retval.ret.setLhs($mat_name.ret); }
-    ASSIGNMENT 
-    mat_var {retval.ret.setRhs($mat_var.ret);};
-
-mat_var returns [Element ret]
-  :   (mat_name { retval.ret = $mat_name.ret; } 
-  |   mat_data {retval.ret = $mat_data.ret; } );
-
-mat_name returns [MatrixName ret]
-@init {
-  retval.ret = new MatrixName();
-}
-  : 'mat' MAT_NAME { retval.ret.setText ($MAT_NAME.text);};
-
-mat_data returns [MatrixData ret]
-@init {
-  retval.ret = new MatrixData();
-}
-  : MAT_DATA { retval.ret.setText ($MAT_DATA.text);};
 
 addition returns [AdditionOperationElement ret]
 @init {
@@ -107,18 +82,68 @@ multiplication returns [MultiplicationOperationElement ret]
     MULT 
     el2=var_or_int_literal { retval.ret.setRhs($el2.ret); };
 
-
 print returns [PrintOperationElement ret]
 @init {
   retval.ret = new PrintOperationElement();
 }
   : 'print' var_or_int_literal {retval.ret.setChildElement($var_or_int_literal.ret); }END_OF_STATEMENT; 
 
+
+
+
+
+mat_assignment returns [MatrixAssignmentOperationElement ret]
+@init {
+  retval.ret = new MatrixAssignmentOperationElement();
+}
+  : mat_name {retval.ret.setLhs($mat_name.ret); }
+    ASSIGNMENT 
+    (mat_var {retval.ret.setRhs($mat_var.ret);}
+    | mat_addition {retval.ret.setRhs($mat_addition.ret); } 
+    | mat_multiplication {retval.ret.setRhs($mat_multiplication.ret); } 
+
+    )END_OF_STATEMENT ;
+
+mat_var returns [Element ret]
+  :   (mat_name { retval.ret = $mat_name.ret; } 
+  |   mat_data {retval.ret = $mat_data.ret; } );
+
+mat_name returns [MatrixName ret]
+@init {
+  retval.ret = new MatrixName();
+}
+  : 'mat' VARIABLE { retval.ret.setText ($VARIABLE.text);};
+
+mat_data returns [MatrixData ret]
+@init {
+  retval.ret = new MatrixData();
+}
+  : MAT_DATA { retval.ret.setText ($MAT_DATA.text);};
+
+mat_addition returns [MatrixAdditionOperationElement ret]
+@init {
+  retval.ret = new MatrixAdditionOperationElement();
+}
+  : el1=mat_name { retval.ret.setLhs($el1.ret); } 
+    PLUS 
+    el2=mat_name { retval.ret.setRhs($el2.ret); };
+
+mat_multiplication returns [MatrixMultiplicationOperationElement ret]
+@init {
+  retval.ret = new MatrixMultiplicationOperationElement();
+}
+  : el1=mat_name { retval.ret.setLhs($el1.ret); } 
+    MULT 
+    el2=mat_name { retval.ret.setRhs($el2.ret); };
+
 mat_print returns [PrintMatOperationElement ret]
 @init {
   retval.ret = new PrintMatOperationElement();
 }
   : 'print_mat' VARIABLE { retval.ret.setText($VARIABLE.text);};
+
+
+
 
 
 /*
@@ -131,8 +156,6 @@ PLUS: '+';
 MULT: '*';
 VARIABLE: ('a'..'z' | 'A'..'Z' )+;
 INT_LITERAL: ('0'..'9')+;
-MAT_NAME: (VARIABLE INT_LITERAL? ('[' INT_LITERAL ']')+ );
-MAT_PRINT_NAME: (VARIABLE INT_LITERAL?);
 MAT_DATA: ( '[' ( (INT_LITERAL) | ((INT_LITERAL ',')+ INT_LITERAL) | (('[' (INT_LITERAL ',')+ INT_LITERAL ']')+ ) ) ']');
 WHITESPACE : (' ' | '\t' | '\n' | '\r' )+ {$channel = HIDDEN; } ;
 

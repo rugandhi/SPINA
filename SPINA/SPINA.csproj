@@ -12,6 +12,8 @@
     <AssemblyName>Interp_CSharp</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,8 +65,10 @@
   <ItemGroup>
     <Compile Include="AdditionOperationElement.cs" />
     <Compile Include="AssignmentOperationElement.cs" />
+    <Compile Include="MatrixAdditionOperationElement.cs" />
     <Compile Include="MatrixAssignmentOperationELement.cs" />
     <Compile Include="MatrixData.cs" />
+    <Compile Include="MatrixMultiplicaitonOperationElement.cs" />
     <Compile Include="MatrixName.cs" />
     <Compile Include="Element.cs" />
     <Compile Include="IntegerElement.cs" />

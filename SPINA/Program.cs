@@ -57,7 +57,7 @@ namespace Interp_CSharp
 
          //first demonstrate visiting premade line.
          theprogram.VisitLine("myvariable = 1 + 2; var = myvariable + 3; print var;");
-         theprogram.VisitLine("mat a[2][2]=[[1,3][4,5]];");
+         theprogram.VisitLine("mat a =[[1,3][4,5]]; mat b =[[6,7][8,9]];");
          theprogram.RunEvalLoop();
       }
    }

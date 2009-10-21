@@ -16,10 +16,12 @@ public class InterpreterVisitor : Visitor {
 
   Hashtable mVariableMap;
   Stack<int> mStack;
+  Stack<int[,]> matStack;
 
   public InterpreterVisitor(){
     mVariableMap = new Hashtable();
     mStack = new Stack<int>();
+    matStack = new Stack<int[,]>();
   }
 
   public override void VisitVariableElement(VariableElement element){
@@ -36,61 +38,23 @@ public class InterpreterVisitor : Visitor {
     int element_value = int.Parse(element.getText());
     mStack.Push(element_value);
   }
-  public override void VisitMatrixName(MatrixName element)
+  
+  public override void VisitAssignmentOperationElement(AssignmentOperationElement element)
   {
-      if (mVariableMap.ContainsKey(element.getText()))
-      {
-          int element_value = (int)mVariableMap[element.getText()];
-          mStack.Push(element_value);
-      }
-      else{ }
-  }
-  public override void VisitMatrixData(MatrixData element)
-  {
-      String MatrixValues = element.getText();
-      for (int i = 1; i<MatrixValues.LastIndexOf(']'); i++)
-      {
-          if (MatrixValues[i] == ',' | MatrixValues[i] == '[' | MatrixValues[i] == ']')
-              continue;
-          int element_value = int.Parse(MatrixValues[i].ToString());
-          mStack.Push(element_value);
-      }    
-  }
-  public override void VisitAssignmentOperationElement(AssignmentOperationElement element){
-    String variable_name = element.getLhs().getText();
-    Element rhs = element.getRhs();
-    VisitElement(rhs); 
-    int result = mStack.Pop();    
-    mVariableMap[variable_name] = result;
-  }
-  public override void VisitMatrixAssignmentOperationElement(MatrixAssignmentOperationElement element)
-  {
-      String mat_fullname = element.getLhs().getText();
-      String mat_name = mat_fullname.Substring(0,mat_fullname.IndexOf("["));
-      String row_sizeText = mat_fullname.Substring(mat_fullname.IndexOf("[")+1, mat_fullname.IndexOf("]")-mat_fullname.IndexOf("[")-1);
-      String col_sizeText = mat_fullname.Substring(mat_fullname.LastIndexOf("[")+1, mat_fullname.LastIndexOf("]")- mat_fullname.LastIndexOf("[")-1);
-      int row_size = int.Parse(row_sizeText);
-      int col_size = int.Parse(col_sizeText);
-      int[,] mat= new int[row_size,col_size];
-
+      String variable_name = element.getLhs().getText();
       Element rhs = element.getRhs();
-      String S = rhs.ToString();
-      VisitElement(rhs);             
-      for(int i=row_size-1;i>=0;i--)
-          for (int j = col_size-1; j >=0 ; j--)
-          {
-              int result = mStack.Pop();
-              mat[i, j] = result;
-          }  
-      mVariableMap[mat_name] = mat;
+      VisitElement(rhs);
+      int result = mStack.Pop();
+      mVariableMap[variable_name] = result;
   }
-  public override void VisitAdditionOperationElement(AdditionOperationElement element){
-    VisitElement(element.getLhs());
-    VisitElement(element.getRhs());
-    int rhs = mStack.Pop();
-    int lhs = mStack.Pop();
-    int result = rhs + lhs;
-    mStack.Push(result);    
+  public override void VisitAdditionOperationElement(AdditionOperationElement element)
+  {
+      VisitElement(element.getLhs());
+      VisitElement(element.getRhs());
+      int rhs = mStack.Pop();
+      int lhs = mStack.Pop();
+      int result = rhs + lhs;
+      mStack.Push(result);
   }
   public override void VisitMultiplicationOperationElement(MultiplicationOperationElement element)
   {
@@ -106,6 +70,89 @@ public class InterpreterVisitor : Visitor {
     int result = mStack.Pop();
     Console.WriteLine(result.ToString());
   }
+  public override void VisitMatrixName(MatrixName element)
+  {
+      if (mVariableMap.ContainsKey(element.getText()))
+      {
+          int[,] element_value = (int[,])mVariableMap[element.getText()];
+          matStack.Push(element_value);
+      }
+      else { }
+  }
+  public override void VisitMatrixData(MatrixData element)
+  {
+      String MatrixValues = element.getText();
+      int rowsize = 0, colsize = 0;
+      for (int i = 1; i < MatrixValues.LastIndexOf(']'); i++)
+      {
+          if (MatrixValues[i] == ',')
+          {   colsize++;      continue; }
+          if (MatrixValues[i] == '[')
+           continue; 
+          if (MatrixValues[i] == ']')
+          { rowsize++; continue; }
+          int element_value = int.Parse(MatrixValues[i].ToString());
+          mStack.Push(element_value);
+      }
+      colsize = (colsize / rowsize) + 1;
+      int[,] mat = new int[rowsize, colsize];
+      for (int i = rowsize - 1; i >= 0; i--)
+          for (int j = colsize - 1; j >= 0; j--)
+          {
+              int result = mStack.Pop();
+              mat[i, j] = result;
+          }
+      matStack.Push(mat);
+  }
+
+  public override void VisitMatrixAssignmentOperationElement(MatrixAssignmentOperationElement element)
+  {
+      Element rhs = element.getRhs();
+      VisitElement(rhs);
+      String mat_name = element.getLhs().getText();       
+      int[,] mat_data = matStack.Pop();
+      mVariableMap[mat_name] = mat_data;
+  }
+
+  public override void VisitMatrixAdditionOperationElement(MatrixAdditionOperationElement element)
+  {
+      VisitElement(element.getLhs());
+      VisitElement(element.getRhs());
+      int[,] mat2 = matStack.Pop();
+      int[,] mat1 = matStack.Pop();
+      int[,] temp = new int[mat2.GetLength(0), mat2.GetLength(1)];
+      if (mat1.GetLength(0) == mat2.GetLength(0) && mat1.GetLength(1) == mat2.GetLength(1))
+      {
+          for (int i = 0; i < mat2.GetLength(0); i++)
+              for (int j = 0; j < mat2.GetLength(1); j++)
+                  temp[i, j] = mat1[i, j] + mat2[i, j];
+      }
+      else
+          Console.Write("\n\nINVALID SIZE TO ADD \n");
+      matStack.Push(temp);
+  }
+  public override void VisitMatrixMultiplicationOperationElement(MatrixMultiplicationOperationElement element)
+  {
+      VisitElement(element.getLhs());
+      VisitElement(element.getRhs());
+      int[,] mat2 = matStack.Pop();
+      int[,] mat1 = matStack.Pop();
+      int[,] temp = new int[mat1.GetLength(0), mat2.GetLength(1)];
+      if (mat1.GetLength(1) == mat2.GetLength(0))
+      {
+          for (int i = 0; i < mat1.GetLength(0); i++)
+              for (int j = 0; j < mat2.GetLength(1); j++)
+              {
+                  int sum = 0;
+                  for (int k = 0; k < mat1.GetLength(1); k++)
+                      sum += (mat1[i, k] * mat2[k, j]);
+                  temp[i, j] = sum;
+              }
+      }
+      else
+          Console.Write("\n\nINVALID SIZE TO MULTIPLY\n");
+      matStack.Push(temp);
+  }
   public override void VisitPrintMatOperationElement(PrintMatOperationElement element)
   {
       String matname = element.getText();
@@ -113,7 +160,7 @@ public class InterpreterVisitor : Visitor {
       for (int i = 0; i < mat.GetLength(0); i++)
       {
           for (int j = 0; j < mat.GetLength(1); j++)
-              Console.Write(mat[i,j] + " ");
+              Console.Write(mat[i, j] + " ");
           Console.WriteLine();
       }
   }
