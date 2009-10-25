@@ -144,6 +144,11 @@ mat_print returns [PrintMatOperationElement ret]
 
 
 
+parallel_for returns [ParallelForElement ret]
+@init{
+   retval.ret = new ParallelForElement();
+}
+  : 'parallel_for' PARALLEL_FOR expr {retval.ret.}
 
 
 /*
@@ -157,5 +162,7 @@ MULT: '*';
 VARIABLE: ('a'..'z' | 'A'..'Z' )+;
 INT_LITERAL: ('0'..'9')+;
 MAT_DATA: ( '[' ( (INT_LITERAL) | ((INT_LITERAL ',')+ INT_LITERAL) | (('[' (INT_LITERAL ',')+ INT_LITERAL ']')+ ) ) ']');
+PARALLEL_FOR:  '(' VARIABLE '=' '0' '..' NUM_ITERS ')';
+NUM_ITERS: ('1'..'9');
 WHITESPACE : (' ' | '\t' | '\n' | '\r' )+ {$channel = HIDDEN; } ;
 

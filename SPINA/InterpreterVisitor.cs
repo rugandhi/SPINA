@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Threading;
 
 public class InterpreterVisitor : Visitor {
 
@@ -118,40 +119,17 @@ public class InterpreterVisitor : Visitor {
   {
       VisitElement(element.getLhs());
       VisitElement(element.getRhs());
-      int[,] mat2 = matStack.Pop();
-      int[,] mat1 = matStack.Pop();
-      int[,] temp = new int[mat2.GetLength(0), mat2.GetLength(1)];
-      if (mat1.GetLength(0) == mat2.GetLength(0) && mat1.GetLength(1) == mat2.GetLength(1))
-      {
-          for (int i = 0; i < mat2.GetLength(0); i++)
-              for (int j = 0; j < mat2.GetLength(1); j++)
-                  temp[i, j] = mat1[i, j] + mat2[i, j];
-      }
-      else
-          Console.Write("\n\nINVALID SIZE TO ADD \n");
-      matStack.Push(temp);
+      Thread threadObj = new Thread(new ThreadStart(MatrixAddition));
+      threadObj.Start();
+      threadObj.Join();
   }
   public override void VisitMatrixMultiplicationOperationElement(MatrixMultiplicationOperationElement element)
   {
       VisitElement(element.getLhs());
       VisitElement(element.getRhs());
-      int[,] mat2 = matStack.Pop();
-      int[,] mat1 = matStack.Pop();
-      int[,] temp = new int[mat1.GetLength(0), mat2.GetLength(1)];
-      if (mat1.GetLength(1) == mat2.GetLength(0))
-      {
-          for (int i = 0; i < mat1.GetLength(0); i++)
-              for (int j = 0; j < mat2.GetLength(1); j++)
-              {
-                  int sum = 0;
-                  for (int k = 0; k < mat1.GetLength(1); k++)
-                      sum += (mat1[i, k] * mat2[k, j]);
-                  temp[i, j] = sum;
-              }
-      }
-      else
-          Console.Write("\n\nINVALID SIZE TO MULTIPLY\n");
-      matStack.Push(temp);
+      Thread threadObj = new Thread(new ThreadStart(MatrixMultiplication));
+      threadObj.Start();
+      threadObj.Join();
   }
   public override void VisitPrintMatOperationElement(PrintMatOperationElement element)
   {
@@ -164,4 +142,39 @@ public class InterpreterVisitor : Visitor {
           Console.WriteLine();
       }
   }
+  private void MatrixMultiplication()
+    {
+        int[,] mat2 = matStack.Pop();
+        int[,] mat1 = matStack.Pop();
+        int[,] temp = new int[mat1.GetLength(0), mat2.GetLength(1)];
+        if (mat1.GetLength(1) == mat2.GetLength(0))
+        {
+            for (int i = 0; i < mat1.GetLength(0); i++)
+                for (int j = 0; j < mat2.GetLength(1); j++)
+                {
+                    int sum = 0;
+                    for (int k = 0; k < mat1.GetLength(1); k++)
+                        sum += (mat1[i, k] * mat2[k, j]);
+                    temp[i, j] = sum;
+                }
+        }
+        else
+            Console.Write("\nINVALID SIZE TO MULTIPLY\n");
+        matStack.Push(temp);
+    }
+    private void MatrixAddition()
+    {
+        int[,] mat2 = matStack.Pop();
+        int[,] mat1 = matStack.Pop();
+        int[,] temp = new int[mat2.GetLength(0), mat2.GetLength(1)];
+        if (mat1.GetLength(0) == mat2.GetLength(0) && mat1.GetLength(1) == mat2.GetLength(1))
+        {
+            for (int i = 0; i < mat2.GetLength(0); i++)
+                for (int j = 0; j < mat2.GetLength(1); j++)
+                    temp[i, j] = mat1[i, j] + mat2[i, j];
+        }
+        else
+            Console.Write("\nINVALID SIZE TO ADD \n");
+        matStack.Push(temp);
+    }
 }
